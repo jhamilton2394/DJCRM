@@ -1,12 +1,8 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF=8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Hello World</h1>
-    <p>Here is our custom HTML template</p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="lead">
+        <h1>Hello World</h1>
+        <p>Here is our custom HTML template</p>
+    </div>
+{% endblock content %}
