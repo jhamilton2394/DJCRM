@@ -70,3 +70,6 @@ def lead_delete(request, pk):
     lead = Lead.objects.get(id=pk)
     lead.delete()
     return redirect("/leads")
+
+def landing_page(request):
+    return render(request, "landing.html")
