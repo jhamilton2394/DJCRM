@@ -2,9 +2,17 @@ from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.http import HttpResponse
 from .models import Lead, Agent
-from .forms import LeadForm, LeadModelForm
+from .forms import LeadForm, LeadModelForm, CustomUserCreationForm
 from django.urls import reverse
 from django.views.generic import CreateView
+from django.contrib.auth.forms import UserCreationForm
+
+class SignupView(CreateView):
+    template_name = "registration/signup.html"
+    form_class = CustomUserCreationForm
+
+    def get_success_url(self):
+        return reverse("login")
 
 def home_page(request):
     return render(request, "leads/home_page.html")
