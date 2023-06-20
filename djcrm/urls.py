@@ -17,11 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path, include
-from leads.views import home_page, landing_page, SignupView
+from leads.views import (
+    home_page, landing_page, SignupView, LandingPageView)
 from leads import urls
 
 urlpatterns = [
-    path('', landing_page, name='landing-page'),
+    path('', LandingPageView.as_view(), name='landing-page'),
     path('admin/', admin.site.urls),
     path('leads/', include('leads.urls', namespace="leads")),
     path('login/', LoginView.as_view(), name='login'),
