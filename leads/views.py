@@ -1,3 +1,5 @@
+from typing import Any
+from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.http import HttpResponse
@@ -5,7 +7,8 @@ from .models import Lead, Agent
 from .forms import LeadForm, LeadModelForm, CustomUserCreationForm
 from django.urls import reverse
 from django.views.generic import (
-    CreateView, ListView, DetailView, TemplateView, UpdateView, DeleteView)
+    CreateView, ListView, DetailView, TemplateView, UpdateView,
+    DeleteView)
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from agents.mixins import OrganizerAndLoginRequiredMixin
@@ -29,8 +32,20 @@ def lead_detail(request, pk):
 
 class LeadDetailView(LoginRequiredMixin, DetailView):
     template_name = "leads/lead_detail.html"
-    queryset = Lead.objects.all()
     context_object_name = "lead"
+
+    def get_queryset(self):
+        user = self.request.user
+
+        #initial queryset for the entire organization
+        if user.is_organizer:
+            queryset = Lead.objects.filter(organization=user.userprofile)
+        else:
+            queryset = Lead.objects.filter(organization=user.agent.organization)
+            #filter for the agent that is logged in
+            queryset = queryset.filter(agent__user=user)
+        return queryset
+
 
 def lead_list(request):
     leads = Lead.objects.all()
@@ -41,8 +56,20 @@ def lead_list(request):
 
 class LeadListView(LoginRequiredMixin, ListView):
     template_name = "leads/lead_list.html"
-    queryset = Lead.objects.all()
     context_object_name = "leads"
+
+    def get_queryset(self):
+        user = self.request.user
+
+        #initial queryset for the entire organization
+        if user.is_organizer:
+            queryset = Lead.objects.filter(organization=user.userprofile)
+        else:
+            queryset = Lead.objects.filter(organization=user.agent.organization)
+            #filter for the agent that is logged in
+            queryset = queryset.filter(agent__user=user)
+        return queryset
+
 
 def lead_create(request):
     form = LeadModelForm()
@@ -59,14 +86,21 @@ class LeadCreateView(OrganizerAndLoginRequiredMixin, CreateView):
     template_name = "leads/lead_create.html"
     form_class = LeadModelForm
 
+    # def form_valid(self, form):
+    #     send_mail(
+    #         subject="A lead has been created",
+    #         message="Go to the site to see the new lead",
+    #         from_email="test@test.com",
+    #         recipient_list=["test2@test.com"]
+    #     )
+    #     return super(LeadCreateView, self).form_valid(form)
+    
     def form_valid(self, form):
-        send_mail(
-            subject="A lead has been created",
-            message="Go to the site to see the new lead",
-            from_email="test@test.com",
-            recipient_list=["test2@test.com"]
-        )
+        lead = form.save(commit=False)
+        lead.organization = self.request.user.userprofile
+        lead.save()
         return super(LeadCreateView, self).form_valid(form)
+
 
     def get_success_url(self):
         return reverse("leads:lead-list")
@@ -88,7 +122,18 @@ def lead_update(request, pk):
 class LeadUpdateView(OrganizerAndLoginRequiredMixin, UpdateView):
     template_name = "leads/lead_update.html"
     form_class = LeadModelForm
-    queryset = Lead.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+
+        #initial queryset for the entire organization
+        if user.is_organizer:
+            queryset = Lead.objects.filter(organization=user.userprofile)
+        else:
+            queryset = Lead.objects.filter(organization=user.agent.organization)
+            #filter for the agent that is logged in
+            queryset = queryset.filter(agent__user=user)
+        return queryset
 
     def get_success_url(self):
         return reverse("leads:lead-list")
@@ -100,7 +145,18 @@ def lead_delete(request, pk):
 
 class LeadDeleteView(OrganizerAndLoginRequiredMixin, DeleteView):
     template_name = "leads/lead_delete.html"
-    queryset = Lead.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+
+        #initial queryset for the entire organization
+        if user.is_organizer:
+            queryset = Lead.objects.filter(organization=user.userprofile)
+        else:
+            queryset = Lead.objects.filter(organization=user.agent.organization)
+            #filter for the agent that is logged in
+            queryset = queryset.filter(agent__user=user)
+        return queryset
 
     def get_success_url(self):
         return reverse("leads:lead-list")
