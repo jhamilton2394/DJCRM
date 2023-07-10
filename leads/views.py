@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
@@ -60,15 +60,33 @@ class LeadListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-
         #initial queryset for the entire organization
         if user.is_organizer:
-            queryset = Lead.objects.filter(organization=user.userprofile)
+            queryset = Lead.objects.filter(
+                organization=user.userprofile,
+                agent__isnull=False
+            )
         else:
-            queryset = Lead.objects.filter(organization=user.agent.organization)
+            queryset = Lead.objects.filter(
+                organization=user.agent.organization,
+                agent__isnull=False
+            )
             #filter for the agent that is logged in
             queryset = queryset.filter(agent__user=user)
         return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super(LeadListView, self).get_context_data(**kwargs)
+        user = self.request.user
+        if user.is_organizer:
+            queryset = Lead.objects.filter(
+                organization=user.userprofile,
+                agent__isnull=True
+            )
+            context.update({
+                "unassigned_leads": queryset
+            })
+        return context
 
 
 def lead_create(request):
