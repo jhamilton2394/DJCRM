@@ -60,6 +60,7 @@ class LeadListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
+
         #initial queryset for the entire organization
         if user.is_organizer:
             queryset = Lead.objects.filter(
