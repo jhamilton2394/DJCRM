@@ -1,5 +1,5 @@
 from django import forms
-from .models import Lead, User
+from .models import Lead, User, PassDown, Entry
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth import get_user_model
 
@@ -13,6 +13,19 @@ class LeadModelForm(forms.ModelForm):
 			'age',
 			'agent',
         )
+
+class PassDownForm(forms.ModelForm):
+	class Meta:
+		model = PassDown
+		fields = (
+			'shift',
+			'notes',
+		)
+
+class EntryForm(forms.ModelForm):
+	class Meta:
+		model = Entry
+		fields = "__all__"
 		
 class LeadForm(forms.Form):
     first_name = forms.CharField()

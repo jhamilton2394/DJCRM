@@ -3,8 +3,8 @@ from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.http import HttpResponse
-from .models import Lead, Agent
-from .forms import LeadForm, LeadModelForm, CustomUserCreationForm
+from .models import Lead, Agent, Entry
+from .forms import LeadForm, LeadModelForm, CustomUserCreationForm, PassDownForm, EntryForm
 from django.urls import reverse
 from django.views.generic import (
     CreateView, ListView, DetailView, TemplateView, UpdateView,
@@ -89,6 +89,25 @@ class LeadListView(LoginRequiredMixin, ListView):
             })
         return context
 
+class EntryListView(LoginRequiredMixin, ListView):
+    template_name = "leads/entry_list.html"
+    context_object_name = "entries"
+
+    def get_queryset(self):
+        user = self.request.user
+
+        QuerySet = Entry.objects.all()
+        return QuerySet
+    
+class EntryByPassdown(LoginRequiredMixin, ListView):
+    template_name = "leads/entry_by_passdown.html"
+    context_object_name = "entries"
+
+    def get_queryset(self):
+        user = self.request.user
+        QuerySet = Entry.objects.filter(passdown_id=1)
+        return QuerySet
+        
 
 def lead_create(request):
     form = LeadModelForm()
@@ -123,6 +142,27 @@ class LeadCreateView(OrganizerAndLoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse("leads:lead-list")
+    
+class PassDownCreateView(LoginRequiredMixin, CreateView):
+    template_name = "leads/passdown_create.html"
+    form_class = PassDownForm
+
+    def form_valid(self, form):
+        entered = form.save(commit=False)
+        entered.entered_by = self.request.user.userprofile
+        entered.save()
+        return super(PassDownCreateView, self).form_valid(form)
+    
+    def get_success_url(self):
+        return reverse("leads:passdown-create")
+    
+class EntryCreateView(LoginRequiredMixin, CreateView):
+    template_name = "leads/entry_create.html"
+    form_class = EntryForm
+
+    def get_success_url(self):
+        return reverse("leads:entry-create")
+
 
 def lead_update(request, pk):
     lead = Lead.objects.get(id=pk)

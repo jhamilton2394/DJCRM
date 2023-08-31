@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save, pre_save
+from django.utils import timezone
+
 
 class User(AbstractUser):
     is_organizer = models.BooleanField(default=True)
@@ -22,6 +24,27 @@ class Lead(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+        
+class PassDown(models.Model):
+    shiftList = [("Days", "Days"),
+                 ("Nights", "Nights"),
+                 ("Mids", "Mids")]
+    shift = models.CharField(max_length=10, choices=shiftList)
+    date = models.DateField(default=timezone.now)
+    time = models.TimeField(default=timezone.now)
+    notes = models.TextField()
+    entered_by = models.ForeignKey(UserProfile, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f"{self.shift} {self.date} {self.id}"
+class Entry(models.Model):
+    modex = models.IntegerField()
+    discrepancy = models.CharField(max_length=50)
+    text_body = models.TextField()
+    passdown = models.ForeignKey(PassDown, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.modex} {self.discrepancy} {self.passdown.date}"
 
 class Agent(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

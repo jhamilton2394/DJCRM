@@ -11,9 +11,17 @@
           <a href="{% url 'signup'%}" class="mr-5 hover:text-gray-900">Signup</a>
         {% else %}
           {% if request.user.is_organizer %}
+            <a href="{% url 'landing-page' %}"class="mr-5 hover:text-gray-900">Home</a>
+            <a href="{% url 'leads:entry-create' %}"class="mr-5 hover:text-gray-900">Create Entry</a>
             <a href="{% url 'agents:agent-list' %}"class="mr-5 hover:text-gray-900">Agents</a>
+            <a href="{% url 'leads:entry-list' %}"class="mr-5 hover:text-gray-900">Entries</a>
+            <a href="{% url 'leads:entry-by-passdown' %}"class="mr-5 hover:text-gray-900">Entries by passdown</a>
           {% endif %}
+          <a href="{% url 'landing-page' %}"class="mr-5 hover:text-gray-900">Home</a>
+          <a href="{% url 'leads:entry-create' %}"class="mr-5 hover:text-gray-900">Create Entry</a>
           <a href="{% url 'leads:lead-list' %}"class="mr-5 hover:text-gray-900">Leads</a>
+          <a href="{% url 'leads:entry-list' %}"class="mr-5 hover:text-gray-900">Entries</a>
+          <a href="{% url 'leads:entry-by-passdown' %}"class="mr-5 hover:text-gray-900">Entries by passdown</a>
         {% endif %}
       </nav>
       {% if request.user.is_authenticated %}
