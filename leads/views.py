@@ -3,7 +3,7 @@ from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.http import HttpResponse
-from .models import Lead, Agent, Entry
+from .models import Lead, Agent, Entry, PassDown
 from .forms import LeadForm, LeadModelForm, CustomUserCreationForm, PassDownForm, EntryForm
 from django.urls import reverse
 from django.views.generic import (
@@ -103,10 +103,18 @@ class EntryByPassdown(LoginRequiredMixin, ListView):
     template_name = "leads/entry_by_passdown.html"
     context_object_name = "entries"
 
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['queryset1'] = Entry.objects.filter(passdown_id=1)
+        context_data['queryset2'] = PassDown.objects.filter(id=1)
+        return context_data
+
     def get_queryset(self):
-        user = self.request.user
-        QuerySet = Entry.objects.filter(passdown_id=1)
-        return QuerySet
+        myset = {
+            "queryset1": Entry.objects.filter(passdown_id=1),
+            "queryset2": PassDown.objects.filter(id=1)
+        }
+        return myset
         
 
 def lead_create(request):

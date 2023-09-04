@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% inlcude Ent %}
-    <p>All entries for {{ entry.passdown.date }} {{ entry.passdown.shift }} passdown.</p>
-{% endfor %}
+    <p>All entries for {{ entries.queryset2.date }} {{ entry.passdown.shift }} passdown.</p>
+    <div class="md:w-64 md:mb-0 mb-6 flex-shrink-0 flex flex-col">
+      <span class="font-semibold title-font text-gray-700">{{ entry.modex }}</span>
+      <span class="mt-1 text-gray-500 text-sm">{{ entry.passdown.date }} {{entry.passdown.time}}</span>
+    </div>
 
 {% for entry in entries %}
  <section class="text-gray-600 body-font overflow-hidden">
@@ -13,7 +15,7 @@
 
           <div class="md:w-64 md:mb-0 mb-6 flex-shrink-0 flex flex-col">
             <span class="font-semibold title-font text-gray-700">{{ entry.modex }}</span>
-            <span class="mt-1 text-gray-500 text-sm">{{ entry.passdown.date }} {{entry.passdown.time}}</span>
+            <span class="mt-1 text-gray-500 text-sm">{{ entry.queryset1.passdown.date }} {{entry.passdown.time}}</span>
           </div>
 
           <div class="md:flex-grow">
