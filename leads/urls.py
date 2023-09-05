@@ -4,7 +4,7 @@ from leads.views import (
     lead_detail, lead_list, lead_create, lead_update, lead_delete,
     LeadCreateView, LeadListView, LeadUpdateView, LeadDetailView,
     LeadDeleteView, PassDownCreateView, EntryCreateView, EntryListView,
-    EntryByPassdown)   
+    EntryByPassdown, DropdownView)   
 
 app_name = "leads"
 
@@ -17,5 +17,6 @@ urlpatterns = [
     path('createpassdown', PassDownCreateView.as_view(), name="passdown-create"),
     path('createentry', EntryCreateView.as_view(), name="entry-create"),
     path('entrylist', EntryListView.as_view(), name="entry-list"),
-    path('entrybypassdown', EntryByPassdown.as_view(), name="entry-by-passdown")
+    path('entrybypassdown', EntryByPassdown.as_view(), name="entry-by-passdown"),
+    path('dropdownview', DropdownView.as_view(), name="dropdownview")
 ]

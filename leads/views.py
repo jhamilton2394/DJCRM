@@ -234,3 +234,6 @@ def landing_page(request):
 
 class LandingPageView(TemplateView):
     template_name = "landing.html"
+
+class DropdownView(TemplateView):
+    template_name = "dropdown_navbar.html"
