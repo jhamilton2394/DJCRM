@@ -4,7 +4,7 @@ from leads.views import (
     lead_detail, lead_list, lead_create, lead_update, lead_delete,
     LeadCreateView, LeadListView, LeadUpdateView, LeadDetailView,
     LeadDeleteView, PassDownCreateView, EntryCreateView, EntryListView,
-    EntryByPassdown, DropdownView, pokemon_view, pokemon_info)   
+    EntryByPassdown, DropdownView)   
 
 app_name = "leads"
 
