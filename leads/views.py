@@ -3,8 +3,8 @@ from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.http import HttpResponse
-from .models import Lead, Agent, Entry, PassDown
-from .forms import LeadForm, LeadModelForm, CustomUserCreationForm, PassDownForm, EntryForm
+from .models import Lead, Agent
+from .forms import LeadForm, LeadModelForm, CustomUserCreationForm
 from django.urls import reverse
 from django.views.generic import (
     CreateView, ListView, DetailView, TemplateView, UpdateView,
@@ -88,35 +88,7 @@ class LeadListView(LoginRequiredMixin, ListView):
                 "unassigned_leads": queryset
             })
         return context
-
-class EntryListView(LoginRequiredMixin, ListView):
-    template_name = "leads/entry_list.html"
-    context_object_name = "entries"
-
-    def get_queryset(self):
-        user = self.request.user
-
-        QuerySet = Entry.objects.all()
-        return QuerySet
-    
-class EntryByPassdown(LoginRequiredMixin, ListView):
-    template_name = "leads/entry_by_passdown.html"
-    context_object_name = "entries"
-
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        context_data['queryset1'] = Entry.objects.filter(passdown_id=1)
-        context_data['queryset2'] = PassDown.objects.filter(id=1)
-        return context_data
-
-    def get_queryset(self):
-        myset = {
-            "queryset1": Entry.objects.filter(passdown_id=1),
-            "queryset2": PassDown.objects.filter(id=1)
-        }
-        return myset
         
-
 def lead_create(request):
     form = LeadModelForm()
     if request.method == "POST":
@@ -147,30 +119,8 @@ class LeadCreateView(OrganizerAndLoginRequiredMixin, CreateView):
         lead.save()
         return super(LeadCreateView, self).form_valid(form)
 
-
     def get_success_url(self):
         return reverse("leads:lead-list")
-    
-class PassDownCreateView(LoginRequiredMixin, CreateView):
-    template_name = "leads/passdown_create.html"
-    form_class = PassDownForm
-
-    def form_valid(self, form):
-        entered = form.save(commit=False)
-        entered.entered_by = self.request.user.userprofile
-        entered.save()
-        return super(PassDownCreateView, self).form_valid(form)
-    
-    def get_success_url(self):
-        return reverse("leads:passdown-create")
-    
-class EntryCreateView(LoginRequiredMixin, CreateView):
-    template_name = "leads/entry_create.html"
-    form_class = EntryForm
-
-    def get_success_url(self):
-        return reverse("leads:entry-create")
-
 
 def lead_update(request, pk):
     lead = Lead.objects.get(id=pk)
@@ -227,7 +177,6 @@ class LeadDeleteView(OrganizerAndLoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return reverse("leads:lead-list")
-
 
 def landing_page(request):
     return render(request, "landing.html")
